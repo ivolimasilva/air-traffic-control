@@ -9,6 +9,7 @@ class Airspace
 	-- TODO Define values here
 
 	instance variables
+		private minSpace : nat1 := 2;
 		private size : Size;
 		private radars : seq of Radar := [];
 		private beacons : seq of Beacon := [];
@@ -45,6 +46,20 @@ class Airspace
 		public addPlane : Plane ==> ()
 			addPlane(plane) == (
 				planes := planes ^ [plane];
+			);
+
+		-- Operation to look out for collisions between planes
+		public checkCollisions : () ==> seq of Plane
+			checkCollisions() == (
+				dcl planesToCollide : seq of Plane := [];
+
+				for i = 1 to len planes by 1 do
+					for j = i + 1 to len planes by 1 do
+						if abs (planes(i).getPosition().x - planes(j).getPosition().x) < minSpace
+						then
+							planesToCollide := planesToCollide ^ [planes(i)];
+
+				return planesToCollide;
 			);
 
 	functions
