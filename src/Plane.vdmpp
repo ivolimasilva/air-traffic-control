@@ -1,23 +1,19 @@
 class Plane
 
 	types
-
-		public String = seq of char;
 		public Direction = <N>|<NE>|<E>|<SE>|<S>|<SW>|<W>|<NW>|<X>;
 		public Status = <air>|<landing>|<landed>;
-
 		public Position ::
 			x : nat
 			y : nat;
 		public Directions ::
-			x : int
-			y : int;
+			x : real
+			y : real;
 
 	values
 	-- TODO Define values here
 
 	instance variables
-
 		private speed : int;
 		private pos : Position;
 		private dir : Directions;
@@ -26,115 +22,95 @@ class Plane
 	operations
 
 		-- Construtor of the plane class
-		public Plane : int * nat * nat * Direction * Status ==> Plane
-		Plane(initial_speed, pos_x, pos_y, direct, stat) == (
-			speed := initial_speed;
-			pos := mk_Position(pos_x, pos_y);
-			dir := calcDir(direct);
-			status := stat;
-		);
+		public Plane : int * nat * nat * real * real * Status ==> Plane
+			Plane(initial_speed, pos_x, pos_y, dir_x, dir_y, stat) == (
+				speed := initial_speed;
+				pos := mk_Position(pos_x, pos_y);
+				dir := mk_Directions(dir_x, dir_y);
+				status := stat;
+			);
 
 		-- Operation to set current speed of the plane
 		public setSpeed : int ==> ()
-		setSpeed(new_speed) == (
-			speed := new_speed;
-		);
+			setSpeed(new_speed) == (
+				speed := new_speed;
+			);
 
 		-- Operation to get current speed of the plane
 		public getSpeed : () ==> int
-		getSpeed() == (
-			return speed;
-		);
+			getSpeed() == (
+				return speed;
+			);
 
 		-- Operation to set current position of the plane
 		public setPosition : nat * nat ==> ()
-		setPosition(initial_x, initial_y) == (
-			pos := mk_Position(initial_x, initial_y);
-		);
+			setPosition(initial_x, initial_y) == (
+				pos := mk_Position(initial_x, initial_y);
+			);
 
 		-- Operation to get current position of the plane
 		public getPosition : () ==> Position
-		getPosition() == (
-			return pos;
-		);
+			getPosition() == (
+				return pos;
+			);
 
-		-- Operation to set current direction of the plane
-		public setDirections : Direction ==> ()
-		setDirections(direction) == (
-			dir := calcDir(direction);
-		);
+		-- Operation to set current directions of the plane
+		public setDirections : real * real ==> ()
+			setDirections(dir_x, dir_y) == (
+				dir := mk_Directions(dir_x, dir_y);
+			);
+
+		-- Operation to get current directions of the plane
+		public getDirections : () ==> Directions
+			getDirections() == (
+				return dir;
+			);
 
 		-- Operation to get current direction of the plane
-		public getDirections : () ==> Directions
-		getDirections() == (
-			return dir;
-		);
+		public getDirection : () ==> Direction
+			getDirection() == (
+				return calcDirSymbol(dir.x, dir.y);
+			);
 
 		-- Operation to set current status of the plane
 		public setStatus : Status ==> ()
-		setStatus(stat) == (
-			status := stat;
-		);
+			setStatus(stat) == (
+				status := stat;
+			);
 
 		-- Operation to get current status of the plane
 		public getStatus : () ==> Status
-		getStatus() == (
-			return status;
-		);
+			getStatus() == (
+				return status;
+			);
 
 	functions
 
 		-- Function to return the symbol of a given direction
-		public calcDirSymbol : int * int -> Direction
+		public calcDirSymbol : real * real -> Direction
 			calcDirSymbol(dir_x, dir_y) == (
-				if (dir_x = 0 and dir_y = 1)
+				if (dir_x = 0 and dir_y > 0)
 					then <N>
-				else if (dir_x = 1 and dir_y = 1)
-					then <NE>
-				else if (dir_x = 1 and dir_y = 0)
+				else if (dir_x > 0 and dir_y = 0)
 					then <E>
-				else if (dir_x = 1 and dir_y = -1)
-					then <SE>
-				else if (dir_x = 0 and dir_y = -1)
+				else if (dir_x = 0 and dir_y < 0)
 					then <S>
-				else if (dir_x = -1 and dir_y = -1)
-					then <SW>
-				else if (dir_x = -1 and dir_y = 0)
+				else if (dir_x < 0 and dir_y = 0)
 					then <W>
-				else if (dir_x = -1 and dir_y = 1)
+				else if (MATH`tan(dir_x / dir_y) > 0 and MATH`tan(dir_x / dir_y) < 90)
+					then <NE>
+				else if (MATH`tan(dir_x / dir_y) > 90 and MATH`tan(dir_x / dir_y) < 180)
 					then <NW>
+				else if (MATH`tan(dir_x / dir_y) > 180 and MATH`tan(dir_x / dir_y) < 270)
+					then <SW>
+				else if (MATH`tan(dir_x / dir_y) > 270 and MATH`tan(dir_x / dir_y) < 360)
+					then <SE>
 				else <X>
 			);
 			-- Pre-condition: dir_x and dir_y can't be zero at same time
 			-- pre (dir_x <> 0 and dir_y <> 0);
 			-- Post-condition: dir.symbol can't be <X>
 			-- post (dir.symbol <> <X>);
-
-		-- Function to return the directions of a given direction symbol
-		public calcDir : Direction -> Directions
-			calcDir(dirSymbol) == (
-				if (dirSymbol = <N>)
-					then mk_Directions(0, 1)
-				else if (dirSymbol = <NE>)
-					then mk_Directions(1, 1)
-				else if (dirSymbol = <E>)
-					then mk_Directions(1, 0)
-				else if (dirSymbol = <SE>)
-					then mk_Directions(1, -1)
-				else if (dirSymbol = <S>)
-					then mk_Directions(0, 0)
-				else if (dirSymbol = <SW>)
-					then mk_Directions(-1, -1)
-				else if (dirSymbol = <W>)
-					then mk_Directions(-1, 0)
-				else if (dirSymbol = <NW>)
-					then mk_Directions(-1, 1)
-				else mk_Directions(0, 0)
-			);
-			-- Pre-condition: dirSymbol can't be <X>
-			-- pre (dir.symbol <> <X>);
-			-- Post-condition: dir.x and dir.y can't be zero at same time
-			-- post (dir_x <> 0 and dir_y <> 0);
 
 	traces
 	-- TODO Define Combinatorial Test Traces here

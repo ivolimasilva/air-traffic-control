@@ -1,0 +1,52 @@
+class Airport
+	types
+		public Direction = <N>|<NE>|<E>|<SE>|<S>|<SW>|<W>|<NW>|<X>;
+		public Position ::
+			x : nat
+			y : nat;
+
+	values
+	-- TODO Define values here
+
+	instance variables
+		private pos : Position;
+		private dir : Direction;
+		private cap : nat;
+		private planes : seq of Plane := [];
+
+	operations
+
+		-- construtor of Airport class
+		public Airport : Direction * nat * nat * nat ==> Airport
+			Airport(direction, pos_x, pos_y, capacity) == (
+				pos := mk_Position(pos_x, pos_y);
+				dir := direction;
+				cap := capacity;
+			);
+
+		-- Operation to get position of the airport
+		public getPosition : () ==> Position
+			getPosition() == (
+				return pos;
+			);
+
+		-- Operation to get direction of the airport
+		public getDirection : () ==> Direction
+			getDirection() == (
+				return dir;
+			);
+
+		-- Operation to land a Plane in the airport
+		public landPlane : Plane ==> ()
+			landPlane(plane) == (
+				cap := cap + 1;
+				planes := planes ^ [plane];
+			);
+
+	functions
+	-- TODO Define functions here
+
+	traces
+	-- TODO Define Combinatorial Test Traces here
+
+end Airport

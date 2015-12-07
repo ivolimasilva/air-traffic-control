@@ -1,0 +1,26 @@
+class Beacon
+
+	types
+		public Position ::
+			x : nat
+			y : nat;
+
+	values
+	-- TODO Define values here
+
+	instance variables
+		private pos : Position;
+
+	operations
+		public Beacon : nat * nat ==> Beacon
+			Beacon(pos_x, pos_y) == (
+				pos := mk_Position(pos_x, pos_y);
+			);
+
+	functions
+	-- TODO Define functiones here
+
+	traces
+	-- TODO Define Combinatorial Test Traces here
+
+end Beacon
