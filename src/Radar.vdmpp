@@ -1,14 +1,59 @@
 class Radar
-types
--- TODO Define types here
-values
--- TODO Define values here
-instance variables
--- TODO Define instance variables here
-operations
--- TODO Define operations here
-functions
--- TODO Define functiones here
-traces
--- TODO Define Combinatorial Test Traces here
+
+	types
+		public Position ::
+			x : nat
+			y : nat;
+
+	values
+	-- TODO Define values here
+
+	instance variables
+		private radius : nat1;
+		private pos : Position;
+		private dest : Position;
+
+	operations
+
+		-- Construtor of the Radar class
+		public Radar : nat * nat * nat1 ==> Radar
+			Radar(pos_x, pos_y, rad) == (
+				pos := mk_Position(pos_x, pos_y);
+				-- If the dest equals the pos then it means the radar will not move the plane
+				dest := mk_Position(pos_x, pos_y);
+				radius := rad;
+			);
+		-- pre-condition: radius > 0
+
+		-- Operation to set a destination to redirect all planes in the area
+		public setDestination : nat * nat ==> ()
+			setDestination(pos_x, pos_y) == (
+				dest := mk_Position(pos_x, pos_y);
+			);
+
+		-- Operation to check if plane is in this radar area
+		public isInArea : Plane ==> bool
+			isInArea(plane) == (
+				if plane.getPosition().x >= pos.x - radius
+					and plane.getPosition().x <= pos.x + radius
+					and plane.getPosition().y >= pos.y - radius
+					and plane.getPosition().y <= pos.y + radius
+				then
+					return true
+				else
+					return false;
+			);
+
+		-- Operation to redirect all planes in the area to somewhere
+		public takeEffect : Plane * ? ==> ()
+			takeEffect(plane, destination) == (
+				plane.setDestination(destination.getPosition().x, destination.getPosition().y);
+			);
+
+	functions
+	-- TODO Define functiones here
+
+	traces
+	-- TODO Define Combinatorial Test Traces here
+
 end Radar

@@ -42,6 +42,13 @@ class Airport
 				cap := cap + 1;
 				planes := planes ^ [plane];
 			);
+			-- pre-condition: plane must have same direction as airport
+
+		-- Operation to get planes on that airport
+		public getPlanes : () ==> seq of Plane
+			getPlanes() == (
+				return planes;
+			);
 
 	functions
 	-- TODO Define functions here
