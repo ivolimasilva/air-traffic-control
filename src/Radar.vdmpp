@@ -31,6 +31,12 @@ class Radar
 				dest := mk_Position(pos_x, pos_y);
 			);
 
+		-- Operation to get current position of the radar
+		public getPosition : () ==> Position
+			getPosition() == (
+				return pos;
+			);
+
 		-- Operation to check if plane is in this radar area
 		public isInArea : Plane ==> bool
 			isInArea(plane) == (

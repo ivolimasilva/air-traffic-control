@@ -1,9 +1,13 @@
 class Airspace
 
 	types
+		public Building = <Airport> | <Beacon> | <Radar> | <None>;
 		public Size ::
-				x : nat
-				y : nat;
+			x : nat
+			y : nat;
+		public cell ::
+			controlled : bool
+			building : Building;
 
 	values
 	-- TODO Define values here
@@ -11,6 +15,7 @@ class Airspace
 	instance variables
 		private minSpace : nat1 := 2;
 		private size : Size;
+		private area : seq of seq of cell := [];
 		private radars : seq of Radar := [];
 		private beacons : seq of Beacon := [];
 		private airports : seq of Airport := [];
@@ -22,12 +27,19 @@ class Airspace
 		public Airspace : nat * nat ==> Airspace
 			Airspace(size_x, size_y) == (
 				size := mk_Size(size_x, size_y);
+
+				for i = 0 to size_x by 1 do
+					for j = 0 to size_y by 1 do (
+						area(i)(j).building := <None>;
+						area(i)(j).controlled := false;
+					);
 			);
 
 		-- Operation to add radars
 		public addRadar : Radar ==> ()
 			addRadar(radar) == (
 				radars := radars ^ [radar];
+				area(radar.getPosition().x)(radar.getPosition().y).building := <Radar>;
 			);
 
 		-- Operation to add beacons
@@ -47,6 +59,7 @@ class Airspace
 			addPlane(plane) == (
 				planes := planes ^ [plane];
 			);
+		-- pre: all map area must be controlled by radars
 
 		-- Operation to look out for collisions between planes
 		public checkCollisions : () ==> seq of Plane
@@ -63,7 +76,7 @@ class Airspace
 			);
 
 	functions
-	-- TODO Define functiones here
+	-- TODO Define Functions here
 
 	traces
 	-- TODO Define Combinatorial Test Traces here

@@ -17,6 +17,12 @@ class Beacon
 				pos := mk_Position(pos_x, pos_y);
 			);
 
+		-- Operation to get current position of the beacon
+		public getPosition : () ==> Position
+			getPosition() == (
+				return pos;
+			);
+
 	functions
 	-- TODO Define functiones here
 

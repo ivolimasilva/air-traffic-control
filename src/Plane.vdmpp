@@ -50,6 +50,7 @@ class Plane
 			setPosition(initial_x, initial_y) == (
 				pos := mk_Position(initial_x, initial_y);
 			);
+		-- pre: position must be inside map limits
 
 		-- Operation to get current position of the plane
 		public getPosition : () ==> Position
@@ -62,6 +63,7 @@ class Plane
 			setDirections(dir_x, dir_y) == (
 				dir := mk_Directions(dir_x, dir_y);
 			);
+			
 
 		-- Operation to get current directions of the plane
 		public getDirections : () ==> Directions
@@ -92,6 +94,7 @@ class Plane
 			setDestination(pos_x, pos_y) == (
 				dest := mk_Position(pos_x, pos_y);
 			);
+		-- pre: destination must be inside map limits
 
 		-- Operation to get a destination to the plane
 		public getDestination : () ==> Position
@@ -121,6 +124,7 @@ class Plane
 				-- return the new position
 				return pos;
 			);
+		-- post: position must be inside map limits
 
 	functions
 
