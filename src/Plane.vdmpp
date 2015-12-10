@@ -7,8 +7,8 @@ class Plane
 			x : nat
 			y : nat;
 		public Directions ::
-			x : real
-			y : real;
+			x : int
+			y : int;
 
 	values
 	-- TODO Define values here
@@ -97,6 +97,29 @@ class Plane
 		public getDestination : () ==> Position
 			getDestination() == (
 				return dest;
+			);
+
+		-- Operation to get the plane to move for this round
+		public move : () ==> Position
+			move() == (
+				-- update direction
+				dir.x := dest.x - pos.x;
+				dir.y := dest.y - pos.y;
+				
+				if (dir = mk_Directions(0, 0))
+				then
+					return pos;
+
+				-- unitary direction
+				dir.x := dir.x / MATH`sqrt(dir.x * dir.x + dir.y * dir.y);
+				dir.y := dir.y / MATH`sqrt(dir.x * dir.x + dir.y * dir.y);
+
+				-- update position
+				pos.x := pos.x + (dir.x * speed);
+				pos.y := pos.y + (dir.y * speed);
+				
+				-- return the new position
+				return pos;
 			);
 
 	functions
