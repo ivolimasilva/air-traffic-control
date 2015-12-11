@@ -7,8 +7,8 @@ class Plane
 			x : nat
 			y : nat;
 		public Directions ::
-			x : int
-			y : int;
+			x : real
+			y : real;
 
 	values
 	-- TODO Define values here
@@ -92,7 +92,18 @@ class Plane
 		-- Operation to set a destination to the plane
 		public setDestination : nat * nat ==> ()
 			setDestination(pos_x, pos_y) == (
+				-- update destination
 				dest := mk_Position(pos_x, pos_y);
+				-- update direction
+				dir.x := pos_x - pos.x;
+				dir.y := pos_y - pos.y;
+				
+				if (dir <> mk_Directions(0, 0))
+				then (
+					-- unitary direction
+					dir.x := dir.x / MATH`sqrt(dir.x * dir.x + dir.y * dir.y);
+					dir.y := dir.y / MATH`sqrt(dir.x * dir.x + dir.y * dir.y);
+				)
 			);
 		-- pre: destination must be inside map limits
 
@@ -118,8 +129,8 @@ class Plane
 				dir.y := dir.y / MATH`sqrt(dir.x * dir.x + dir.y * dir.y);
 
 				-- update position
-				pos.x := pos.x + (dir.x * speed);
-				pos.y := pos.y + (dir.y * speed);
+				pos.x := floor pos.x + (dir.x * speed);
+				pos.y := floor pos.y + (dir.y * speed);
 				
 				-- return the new position
 				return pos;

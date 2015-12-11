@@ -1,0 +1,24 @@
+class PlaneTest
+types
+-- TODO Define types here
+values
+-- TODO Define values here
+instance variables
+	private plane : Plane := new Plane(1, 5, 5, 1, 1, <air>);
+
+operations
+	public testDestination : () ==> ()
+		testDestination() == (
+			IO`print(plane.getDirection());
+			IO`print("\n");
+			IO`print(plane.setDestination(3, 7));
+			IO`print("\n");
+			IO`print(plane.getDirections());
+			IO`print("\n");
+			IO`print(plane.getDirection());
+		);
+functions
+-- TODO Define functiones here
+traces
+-- TODO Define Combinatorial Test Traces here
+end PlaneTest
