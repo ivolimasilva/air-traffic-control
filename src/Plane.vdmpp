@@ -74,6 +74,8 @@ class Plane
 		-- Operation to get current direction of the plane
 		public getDirection : () ==> Direction
 			getDirection() == (
+				IO`print(MATH`cos(dir.x / dir.y));
+				IO`print(MATH`sin(dir.x / dir.y));
 				return calcDirSymbol(dir.x, dir.y);
 			);
 
@@ -101,8 +103,8 @@ class Plane
 				if (dir <> mk_Directions(0, 0))
 				then (
 					-- unitary direction
-					dir.x := dir.x / MATH`sqrt(dir.x * dir.x + dir.y * dir.y);
-					dir.y := dir.y / MATH`sqrt(dir.x * dir.x + dir.y * dir.y);
+					dir.x := floor dir.x / MATH`sqrt(dir.x * dir.x + dir.y * dir.y);
+					dir.y := floor dir.y / MATH`sqrt(dir.x * dir.x + dir.y * dir.y);
 				)
 			);
 		-- pre: destination must be inside map limits
@@ -125,8 +127,8 @@ class Plane
 					return pos;
 
 				-- unitary direction
-				dir.x := dir.x / MATH`sqrt(dir.x * dir.x + dir.y * dir.y);
-				dir.y := dir.y / MATH`sqrt(dir.x * dir.x + dir.y * dir.y);
+				dir.x := floor dir.x / MATH`sqrt(dir.x * dir.x + dir.y * dir.y);
+				dir.y := floor dir.y / MATH`sqrt(dir.x * dir.x + dir.y * dir.y);
 
 				-- update position
 				pos.x := floor pos.x + (dir.x * speed);
@@ -142,22 +144,22 @@ class Plane
 		-- Function to return the symbol of a given direction
 		public calcDirSymbol : real * real -> Direction
 			calcDirSymbol(dir_x, dir_y) == (
-				if (dir_x = 0 and dir_y > 0)
+				if (MATH`cos(dir_x / dir_y) = 0 and MATH`sin(dir_x / dir_y) = 1)
 					then <N>
-				else if (dir_x > 0 and dir_y = 0)
-					then <E>
-				else if (dir_x = 0 and dir_y < 0)
+				else if (MATH`cos(dir_x / dir_y) = 0 and MATH`sin(dir_x / dir_y) = -1)
 					then <S>
-				else if (dir_x < 0 and dir_y = 0)
+				else if (MATH`cos(dir_x / dir_y) = 1 and MATH`sin(dir_x / dir_y) = 0)
+					then <E>
+				else if (MATH`cos(dir_x / dir_y) = -1 and MATH`sin(dir_x / dir_y) = 0)
 					then <W>
-				else if (MATH`tan(dir_x / dir_y) > 0 and MATH`tan(dir_x / dir_y) < 90)
-					then <NE>
-				else if (MATH`tan(dir_x / dir_y) > 90 and MATH`tan(dir_x / dir_y) < 180)
-					then <NW>
-				else if (MATH`tan(dir_x / dir_y) > 180 and MATH`tan(dir_x / dir_y) < 270)
+				else if (MATH`cos(dir_x / dir_y) > 0 and MATH`cos(dir_x / dir_y) < 1 and MATH`sin(dir_x / dir_y) > 0 and MATH`sin(dir_x / dir_y) < 1)
 					then <SW>
-				else if (MATH`tan(dir_x / dir_y) > 270 and MATH`tan(dir_x / dir_y) < 360)
+				else if (MATH`cos(dir_x / dir_y) > -1 and MATH`cos(dir_x / dir_y) < 0 and MATH`sin(dir_x / dir_y) > 0 and MATH`sin(dir_x / dir_y) < 1)
 					then <SE>
+				else if (MATH`cos(dir_x / dir_y) > -1 and MATH`cos(dir_x / dir_y) < 0 and MATH`sin(dir_x / dir_y) > -1 and MATH`sin(dir_x / dir_y) < 0)
+					then <NE>
+				else if (MATH`cos(dir_x / dir_y) > 0 and MATH`cos(dir_x / dir_y) < 1 and MATH`sin(dir_x / dir_y) > -1 and MATH`sin(dir_x / dir_y) < 0)
+					then <NW>
 				else <X>
 			);
 			-- Pre-condition: dir_x and dir_y can't be zero at same time

@@ -11,7 +11,7 @@ operations
 		testDestination() == (
 			IO`print(plane.getDirection());
 			IO`print("\n");
-			IO`print(plane.setDestination(3, 7));
+			IO`print(plane.setDestination(3, 3));
 			IO`print("\n");
 			IO`print(plane.getDirections());
 			IO`print("\n");
