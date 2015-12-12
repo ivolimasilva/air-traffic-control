@@ -18,7 +18,7 @@ class Plane
 		private pos : Position;
 		private dir : Directions;
 		private status : Status;
-		private dest : Position;
+		private dest : seq of Position := [];
 
 	operations
 
@@ -28,7 +28,7 @@ class Plane
 				speed := initial_speed;
 				pos := mk_Position(pos_x, pos_y);
 				-- If the dest equals the pos then it means the plane will move only due to direction and not to a specifc goal
-				dest := mk_Position(pos_x, pos_y);
+				dest := dest ^ [mk_Position(pos_x, pos_y)];
 				dir := mk_Directions(dir_x, dir_y);
 				status := stat;
 			);
@@ -61,6 +61,7 @@ class Plane
 		-- Operation to set current directions of the plane
 		public setDirections : real * real ==> ()
 			setDirections(dir_x, dir_y) == (
+				dest := [];
 				dir := mk_Directions(dir_x, dir_y);
 			);
 			
@@ -74,8 +75,6 @@ class Plane
 		-- Operation to get current direction of the plane
 		public getDirection : () ==> Direction
 			getDirection() == (
-				IO`print(MATH`cos(dir.x / dir.y));
-				IO`print(MATH`sin(dir.x / dir.y));
 				return calcDirSymbol(dir.x, dir.y);
 			);
 
@@ -95,7 +94,8 @@ class Plane
 		public setDestination : nat * nat ==> ()
 			setDestination(pos_x, pos_y) == (
 				-- update destination
-				dest := mk_Position(pos_x, pos_y);
+				dest := [];
+				dest := dest ^ [mk_Position(pos_x, pos_y)];
 				-- update direction
 				dir.x := pos_x - pos.x;
 				dir.y := pos_y - pos.y;
@@ -110,30 +110,14 @@ class Plane
 		-- pre: destination must be inside map limits
 
 		-- Operation to get a destination to the plane
-		public getDestination : () ==> Position
+		public getDestination : () ==> seq of Position
 			getDestination() == (
 				return dest;
 			);
 
 		-- Operation to get the plane to move for this round
 		public move : () ==> Position
-			move() == (
-				-- update direction
-				dir.x := dest.x - pos.x;
-				dir.y := dest.y - pos.y;
-				
-				if (dir = mk_Directions(0, 0))
-				then
-					return pos;
-
-				-- unitary direction
-				dir.x := floor dir.x / MATH`sqrt(dir.x * dir.x + dir.y * dir.y);
-				dir.y := floor dir.y / MATH`sqrt(dir.x * dir.x + dir.y * dir.y);
-
-				-- update position
-				pos.x := floor pos.x + (dir.x * speed);
-				pos.y := floor pos.y + (dir.y * speed);
-				
+			move() == (				
 				-- return the new position
 				return pos;
 			);

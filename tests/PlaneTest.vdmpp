@@ -7,15 +7,10 @@ instance variables
 	private plane : Plane := new Plane(1, 5, 5, 1, 1, <air>);
 
 operations
-	public testDestination : () ==> ()
+	public testDestination : () ==> Plane`Direction
 		testDestination() == (
-			IO`print(plane.getDirection());
-			IO`print("\n");
-			IO`print(plane.setDestination(3, 3));
-			IO`print("\n");
-			IO`print(plane.getDirections());
-			IO`print("\n");
-			IO`print(plane.getDirection());
+			plane.setDestination(3, 3);
+			return plane.getDirection();
 		);
 functions
 -- TODO Define functiones here
