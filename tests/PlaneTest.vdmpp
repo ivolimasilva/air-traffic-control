@@ -4,7 +4,7 @@ types
 values
 -- TODO Define values here
 instance variables
-	private plane : Plane := new Plane(1, 5, 5, 1, 1, <air>);
+	private plane : Plane := new Plane(1, 5, 5, <air>);
 
 operations
 	public testDestination : () ==> Plane`Direction

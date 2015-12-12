@@ -23,13 +23,13 @@ class Plane
 	operations
 
 		-- Construtor of the plane class
-		public Plane : int * nat * nat * real * real * Status ==> Plane
-			Plane(initial_speed, pos_x, pos_y, dir_x, dir_y, stat) == (
+		public Plane : int * nat * nat * Status ==> Plane
+			Plane(initial_speed, pos_x, pos_y, stat) == (
 				speed := initial_speed;
 				pos := mk_Position(pos_x, pos_y);
 				-- If the dest equals the pos then it means the plane will move only due to direction and not to a specifc goal
-				dest := dest ^ [mk_Position(pos_x, pos_y)];
-				dir := mk_Directions(dir_x, dir_y);
+				-- dest := dest ^ [mk_Position(pos_x, pos_y)];
+				dir := mk_Directions(0, 0);
 				status := stat;
 			);
 
@@ -109,6 +109,12 @@ class Plane
 			);
 		-- pre: destination must be inside map limits
 
+		-- Operation to add a destination to the plane
+		public addDestination : nat * nat ==> ()
+			addDestination(pos_x, pos_y) == (
+				dest := dest ^ [mk_Position(pos_x, pos_y)];
+			);
+
 		-- Operation to get a destination to the plane
 		public getDestination : () ==> seq of Position
 			getDestination() == (
@@ -117,10 +123,56 @@ class Plane
 
 		-- Operation to get the plane to move for this round
 		public move : () ==> Position
-			move() == (				
+			move() == (
+
+				-- check if plane has any more destinations
+				if (dest = [])
+				then
+					return pos;
+
+				-- check if plane reached destination
+				if (pos.x = (hd dest).x and pos.y = (hd dest).y)
+				then (
+					dest := tl dest;
+					dir := mk_Directions(0, 0);
+
+					-- check if plane has any more destinations
+					if (dest = [])
+					then
+						return pos;
+				);
+
+				-- update direction
+				dir.x := (hd dest).x - pos.x;
+				dir.y := (hd dest).y - pos.y;
+
+				-- print directions
+				IO`print("Directions: (");
+				IO`print(dir.x);
+				IO`print(", ");
+				IO`print(dir.y);
+				IO`print(")\n");
+
+				-- unit direction
+				dir.x := floor (dir.x / MATH`sqrt(dir.x * dir.x));
+				dir.y := floor (dir.y / MATH`sqrt(dir.y * dir.y));
+
+				-- print directions
+				IO`print("Unit: (");
+				IO`print(dir.x);
+				IO`print(", ");
+				IO`print(dir.y);
+				IO`print(")\n");
+
+				-- update position
+				pos.x := floor (pos.x + (dir.x * speed));
+				pos.y := floor (pos.y + (dir.y * speed));
+
 				-- return the new position
 				return pos;
+
 			);
+		-- pre: plane must have at least one destination
 		-- post: position must be inside map limits
 
 	functions
