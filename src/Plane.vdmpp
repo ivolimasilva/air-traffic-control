@@ -9,9 +9,6 @@ class Plane
 			x : real
 			y : real;
 
-	values
-	-- TODO Define values here
-
 	instance variables
 		private speed : int;
 		private pos : Position;
@@ -57,8 +54,8 @@ class Plane
 			setDirections(dir_x, dir_y) == (
 				dest := [];
 				dir := mk_Directions(dir_x, dir_y);
-			);
-			
+			)
+			pre calcDirSymbol(dir_x, dir_y) <> <X>;
 
 		-- Operation to get current directions of the plane
 		public getDirections : () ==> Directions
@@ -98,8 +95,8 @@ class Plane
 			addDestination(pos_x, pos_y) == (
 				dest := dest ^ [mk_Position(pos_x, pos_y)];
 				return dest;
-			);
-		-- pre: new destination can't already be in destinations
+			)
+			post repeatedDest(dest);
 
 		public landIn : Airport ==> ()
 			landIn(airport) == (
@@ -169,7 +166,7 @@ class Plane
 	functions
 
 		-- Function to return the symbol of a given direction
-		public calcDirSymbol : real * real -> Direction
+		private calcDirSymbol : real * real -> Direction
 			calcDirSymbol(dir_x, dir_y) == (
 				if (MATH`cos(dir_x / dir_y) = 0 and MATH`sin(dir_x / dir_y) = 1)
 					then <N>
@@ -190,12 +187,31 @@ class Plane
 				else <X>
 			)
 			pre dir_x <> 0 => dir_y <> 0;
-			-- Pre-condition: dir_x and dir_y can't be zero at same time
-			-- pre (dir_x <> 0 and dir_y <> 0);
-			-- Post-condition: dir.symbol can't be <X>
-			-- post (dir.symbol <> <X>);
 
-	traces
-	-- TODO Define Combinatorial Test Traces here
+		-- Function to check if a elem is in a seq
+		private elemInSeq : Position * seq of Position -> bool
+			elemInSeq(elem, sequence) == (
+				if sequence = []
+				then
+					false
+				else if sequence(0) = elem
+				then
+					true
+				else
+					elemInSeq(elem, tl sequence)
+			);
+
+		-- Function to check if a destination is repeated
+		private repeatedDest : seq of Position -> bool
+			repeatedDest(dest) == (
+				if (tl dest) = []
+				then
+					true
+				else if elemInSeq(hd dest, tl dest)
+				then
+					false
+				else
+					repeatedDest(tl dest)
+			);
 
 end Plane
