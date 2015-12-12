@@ -5,9 +5,6 @@ class Beacon
 			x : nat
 			y : nat;
 
-	values
-	-- TODO Define values here
-
 	instance variables
 		private pos : Position;
 
@@ -22,11 +19,5 @@ class Beacon
 			getPosition() == (
 				return pos;
 			);
-
-	functions
-	-- TODO Define functiones here
-
-	traces
-	-- TODO Define Combinatorial Test Traces here
 
 end Beacon

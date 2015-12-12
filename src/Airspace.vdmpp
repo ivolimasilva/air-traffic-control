@@ -9,9 +9,6 @@ class Airspace
 			controlled : bool
 			building : Building;
 
-	values
-	-- TODO Define values here
-
 	instance variables
 		private minSpace : nat1 := 2;
 		private size : Size;
@@ -40,13 +37,11 @@ class Airspace
 			addRadar(radar) == (
 				radars := radars ^ [radar];
 				area(radar.getPosition().x)(radar.getPosition().y).building := <Radar>;
-
 				for i = 0 to size.x by 1 do
 					for j = 0 to size.y by 1 do (
 						area(i)(j).building := <None>;
 						area(i)(j).controlled := false;
 					);
-
 			);
 
 		-- Operation to add beacons

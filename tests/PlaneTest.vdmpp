@@ -4,14 +4,24 @@ types
 values
 -- TODO Define values here
 instance variables
-	private plane : Plane := new Plane(1, 5, 5, <air>);
+	private plane : Plane := new Plane(1, 5, 5);
 
 operations
-	public testDestination : () ==> Plane`Direction
+	private assertTrue: bool ==> ()
+	  assertTrue(cond) == return
+	  pre cond;
+
+	private testDestination : () ==> ()
 		testDestination() == (
 			plane.setDestination(3, 3);
-			return plane.getDirection();
+			assertTrue(plane.getDirection() = <SW>);
 		);
+
+	public static main : () ==> ()
+		main() == (
+			new PlaneTest().testDestination();
+		);
+
 functions
 -- TODO Define functiones here
 traces

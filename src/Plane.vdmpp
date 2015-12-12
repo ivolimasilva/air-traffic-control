@@ -2,7 +2,6 @@ class Plane
 
 	types
 		public Direction = <N>|<NE>|<E>|<SE>|<S>|<SW>|<W>|<NW>|<X>;
-		public Status = <air>|<landing>|<landed>;
 		public Position ::
 			x : nat
 			y : nat;
@@ -17,20 +16,16 @@ class Plane
 		private speed : int;
 		private pos : Position;
 		private dir : Directions;
-		private status : Status;
 		private dest : seq of Position := [];
 
 	operations
 
 		-- Construtor of the plane class
-		public Plane : int * nat * nat * Status ==> Plane
-			Plane(initial_speed, pos_x, pos_y, stat) == (
+		public Plane : int * nat * nat ==> Plane
+			Plane(initial_speed, pos_x, pos_y) == (
 				speed := initial_speed;
 				pos := mk_Position(pos_x, pos_y);
-				-- If the dest equals the pos then it means the plane will move only due to direction and not to a specifc goal
-				-- dest := dest ^ [mk_Position(pos_x, pos_y)];
 				dir := mk_Directions(0, 0);
-				status := stat;
 			);
 
 		-- Operation to set current speed of the plane
@@ -50,7 +45,6 @@ class Plane
 			setPosition(initial_x, initial_y) == (
 				pos := mk_Position(initial_x, initial_y);
 			);
-		-- pre: position must be inside map limits
 
 		-- Operation to get current position of the plane
 		public getPosition : () ==> Position
@@ -78,21 +72,10 @@ class Plane
 				return calcDirSymbol(dir.x, dir.y);
 			);
 
-		-- Operation to set current status of the plane
-		public setStatus : Status ==> ()
-			setStatus(stat) == (
-				status := stat;
-			);
-
-		-- Operation to get current status of the plane
-		public getStatus : () ==> Status
-			getStatus() == (
-				return status;
-			);
-
 		-- Operation to set a destination to the plane
 		public setDestination : nat * nat ==> ()
 			setDestination(pos_x, pos_y) == (
+				dcl aux_dir : Directions;
 				-- update destination
 				dest := [];
 				dest := dest ^ [mk_Position(pos_x, pos_y)];
@@ -102,17 +85,38 @@ class Plane
 				
 				if (dir <> mk_Directions(0, 0))
 				then (
-					-- unitary direction
-					dir.x := floor dir.x / MATH`sqrt(dir.x * dir.x + dir.y * dir.y);
-					dir.y := floor dir.y / MATH`sqrt(dir.x * dir.x + dir.y * dir.y);
+					-- unit direction
+					aux_dir := dir;
+					dir.x := floor (aux_dir.x / MATH`sqrt(aux_dir.x * aux_dir.x + aux_dir.y * aux_dir.y));
+					dir.y := floor (aux_dir.y / MATH`sqrt(aux_dir.x * aux_dir.x + aux_dir.y * aux_dir.y));
 				)
-			);
-		-- pre: destination must be inside map limits
+			)
+			post len dest = 1;
 
 		-- Operation to add a destination to the plane
-		public addDestination : nat * nat ==> ()
+		public addDestination : nat * nat ==> seq of Position
 			addDestination(pos_x, pos_y) == (
 				dest := dest ^ [mk_Position(pos_x, pos_y)];
+				return dest;
+			);
+		-- pre: new destination can't already be in destinations
+
+		public landIn : Airport ==> ()
+			landIn(airport) == (
+				if (airport.getDirection() = <N>)
+				then
+					dest := dest ^ [mk_Position(airport.getPosition().x, airport.getPosition().y - 1)]
+				else if (airport.getDirection() = <S>)
+				then
+					dest := dest ^ [mk_Position(airport.getPosition().x, airport.getPosition().y + 1)]
+				else if (airport.getDirection() = <E>)
+				then
+					dest := dest ^ [mk_Position(airport.getPosition().x - 1, airport.getPosition().y)]
+				else if (airport.getDirection() = <W>)
+				then
+					dest := dest ^ [mk_Position(airport.getPosition().x + 1, airport.getPosition().y)];
+
+				dest := dest ^ [mk_Position(airport.getPosition().x, airport.getPosition().y)];
 			);
 
 		-- Operation to get a destination to the plane
@@ -124,6 +128,7 @@ class Plane
 		-- Operation to get the plane to move for this round
 		public move : () ==> Position
 			move() == (
+				dcl aux_dir : Directions;
 
 				-- check if plane has any more destinations
 				if (dest = [])
@@ -146,23 +151,10 @@ class Plane
 				dir.x := (hd dest).x - pos.x;
 				dir.y := (hd dest).y - pos.y;
 
-				-- print directions
-				IO`print("Directions: (");
-				IO`print(dir.x);
-				IO`print(", ");
-				IO`print(dir.y);
-				IO`print(")\n");
-
 				-- unit direction
-				dir.x := floor (dir.x / MATH`sqrt(dir.x * dir.x));
-				dir.y := floor (dir.y / MATH`sqrt(dir.y * dir.y));
-
-				-- print directions
-				IO`print("Unit: (");
-				IO`print(dir.x);
-				IO`print(", ");
-				IO`print(dir.y);
-				IO`print(")\n");
+				aux_dir := dir;
+				dir.x := floor (aux_dir.x / MATH`sqrt(aux_dir.x * aux_dir.x + aux_dir.y * aux_dir.y));
+				dir.y := floor (aux_dir.y / MATH`sqrt(aux_dir.x * aux_dir.x + aux_dir.y * aux_dir.y));
 
 				-- update position
 				pos.x := floor (pos.x + (dir.x * speed));
@@ -171,9 +163,8 @@ class Plane
 				-- return the new position
 				return pos;
 
-			);
-		-- pre: plane must have at least one destination
-		-- post: position must be inside map limits
+			)
+			pre len dest > 0;
 
 	functions
 
@@ -197,7 +188,8 @@ class Plane
 				else if (MATH`cos(dir_x / dir_y) > 0 and MATH`cos(dir_x / dir_y) < 1 and MATH`sin(dir_x / dir_y) > -1 and MATH`sin(dir_x / dir_y) < 0)
 					then <NW>
 				else <X>
-			);
+			)
+			pre dir_x <> 0 => dir_y <> 0;
 			-- Pre-condition: dir_x and dir_y can't be zero at same time
 			-- pre (dir_x <> 0 and dir_y <> 0);
 			-- Post-condition: dir.symbol can't be <X>
