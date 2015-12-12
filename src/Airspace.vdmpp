@@ -2,6 +2,9 @@ class Airspace
 
 	types
 		public Building = <Airport> | <Beacon> | <Radar> | <None>;
+		public Position ::
+			x : nat
+			y : nat;
 		public Size ::
 			x : nat
 			y : nat;
@@ -42,43 +45,72 @@ class Airspace
 						area(i)(j).building := <None>;
 						area(i)(j).controlled := false;
 					);
-			);
+			)
+			pre inLimits(radar, size);
 
 		-- Operation to add beacons
 		public addBeacon : Beacon ==> ()
 			addBeacon(beacon) == (
 				beacons := beacons ^ [beacon];
-			);
+			)
+			pre inLimits(beacon, size);
 
 		-- Operation to add airports
 		public addAirport : Airport ==> ()
 			addAirport(airport) == (
 				airports := airports ^ [airport];
-			);
+			)
+			pre inLimits(airport, size);
 
 		-- Operation to add planes
 		public addPlane : Plane ==> ()
 			addPlane(plane) == (
 				planes := planes ^ [plane];
-			);
-		-- pre: all map area must be controlled by radars
+			)
+			pre inLimits(plane, size);
 
 		-- Operation to look out for collisions between planes
-		public checkCollisions : () ==> seq of Plane
-			checkCollisions() == (
-				dcl planesToCollide : seq of Plane := [];
-
-				for i = 1 to len planes by 1 do
+		public handleCollisions : () ==> ()
+			handleCollisions() == (
+				for i = 0 to len planes by 1 do
 					for j = i + 1 to len planes by 1 do
 						if abs (planes(i).getPosition().x - planes(j).getPosition().x) < minSpace
 						then
-							planesToCollide := planesToCollide ^ [planes(i)];
+							planes(i).setSpeed(0.5);
+			);
 
-				return planesToCollide;
+		-- Operation to tick planes
+		public tickPlanes : () ==> ()
+			tickPlanes() == (
+				for i = 0 to len planes by 1 do (
+					planes(i).move();
+				);
+			);
+
+		-- Operation to tick radars
+		public tickRadars : () ==> ()
+			tickRadars() == (
+				for i = 0 to len radars by 1 do (
+					for j = 0 to len planes by 1 do (
+							if radars(i).isInArea(planes(j))
+							then
+								radars(i).takeEffect(planes(j));
+						);
+				);
 			);
 
 	functions
-	-- TODO Define Functions here
+
+		-- check if object is in map limits
+		private inLimits : ? * Size -> bool
+			inLimits(building, size) == (
+				if building.getPosition().x < size.x
+					and building.getPosition().y < size.y
+				then
+					true
+				else
+					false
+			);
 
 	traces
 	-- TODO Define Combinatorial Test Traces here

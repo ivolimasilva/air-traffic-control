@@ -57,11 +57,11 @@ class Radar
 			);
 
 		-- Operation to redirect all planes in the area to somewhere
-		public takeEffect : Plane * ? ==> ()
-			takeEffect(plane, destination) == (
+		public takeEffect : Plane ==> ()
+			takeEffect(plane) == (
 				if (redirect = true)
 				then
-					plane.setDestination(destination.getPosition().x, destination.getPosition().y);
+					plane.setDestination(dest.x, dest.y);
 			);
 
 end Radar

@@ -10,7 +10,7 @@ class Plane
 			y : real;
 
 	instance variables
-		private speed : int;
+		private speed : real;
 		private pos : Position;
 		private dir : Directions;
 		private dest : seq of Position := [];
@@ -98,8 +98,15 @@ class Plane
 			)
 			post repeatedDest(dest);
 
-		public landIn : Airport ==> ()
-			landIn(airport) == (
+		-- Operation to add a destination for the plane to go to the beacon
+		public goToBeacon : Beacon ==> ()
+			goToBeacon(beacon) == (
+				dest := dest ^ [mk_Position(beacon.getPosition().x, beacon.getPosition().y)];
+			);
+
+		-- Operation to add a destination for the plane to go to the airport
+		public goToAirport : Airport ==> ()
+			goToAirport(airport) == (
 				if (airport.getDirection() = <N>)
 				then
 					dest := dest ^ [mk_Position(airport.getPosition().x, airport.getPosition().y - 1)]
@@ -123,14 +130,14 @@ class Plane
 			);
 
 		-- Operation to get the plane to move for this round
-		public move : () ==> Position
+		public move : () ==> ()
 			move() == (
 				dcl aux_dir : Directions;
 
 				-- check if plane has any more destinations
 				if (dest = [])
 				then
-					return pos;
+					return;
 
 				-- check if plane reached destination
 				if (pos.x = (hd dest).x and pos.y = (hd dest).y)
@@ -141,7 +148,7 @@ class Plane
 					-- check if plane has any more destinations
 					if (dest = [])
 					then
-						return pos;
+						return;
 				);
 
 				-- update direction
@@ -158,7 +165,7 @@ class Plane
 				pos.y := floor (pos.y + (dir.y * speed));
 
 				-- return the new position
-				return pos;
+				return;
 
 			)
 			pre len dest > 0;

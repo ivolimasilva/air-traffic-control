@@ -4,7 +4,15 @@ types
 values
 -- TODO Define values here
 instance variables
-	private plane : Plane := new Plane(1, 5, 5);
+	private airspace : Airspace := new Airspace(12, 12);
+
+	private planes : seq of Plane := [
+		new Plane(1, 5, 5),
+		new Plane(0.25, 8, 8),
+		new Plane(0.5, 3, 10),
+		new Plane(1, 0, 0),
+		new Plane(0.5, 5, 5)
+	];
 
 operations
 	private assertTrue: bool ==> ()
@@ -13,8 +21,8 @@ operations
 
 	private testDestination : () ==> ()
 		testDestination() == (
-			plane.setDestination(3, 3);
-			assertTrue(plane.getDirection() = <SW>);
+			planes(0).setDestination(3, 3);
+			assertTrue(planes(0).getDirection() = <SW>);
 		);
 
 	public static main : () ==> ()
