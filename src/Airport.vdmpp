@@ -37,6 +37,7 @@ class Airport
 		public addPlane : Plane ==> ()
 			addPlane(plane) == (
 				planes := planes ^ [plane];
+				plane.setSpeed(0);
 			)
 			post len planes < cap;
 

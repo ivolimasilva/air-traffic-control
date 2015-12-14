@@ -5,6 +5,12 @@ instance variables
 	-- test-airspace
 	private airspace : Airspace := new Airspace(15, 15);
 
+	-- test-radar
+	private radar : Radar := new Radar(3, 12, 3);
+
+	-- test-airport
+	private airport : Airport := new Airport (<S>, 10, 7, 12);
+
 	-- test-beacon
 	private beacon : Beacon := new Beacon(10, 10);
 
@@ -31,20 +37,52 @@ operations
 			)
 		);
 
-	private testDirection : () ==> ()
-		testDirection() == (
+	private testDestinations : () ==> ()
+		testDestinations() == (
 			-- testing plane 1
 			planes(1).setDestination(3, 3);
-			-- assert
-			assertTrue(planes(1).getDirection() = <SW>);
 
 			-- testing plane 2
 			planes(2).goToBeacon(beacon);
+
+			-- testing plane 3
+			planes(3).goToAirport(airport);
+
+			-- planes/radars tick
+			for i = 0 to 50 by 1 do (
+				airspace.tickPlanes();
+				airspace.tickRadars();
+			);
+
+			-- assert plane 1
+			IO`print(planes(1).getDirection());
+			IO`print("\n");
+			assertTrue(planes(1).getDirection() = <SW>);
+
+			-- assert plane 2
+			IO`print(planes(2).getPosition());
+			IO`print("\n");
+			IO`print(beacon.getPosition());
+			IO`print("\n");
+			assertTrue(
+				planes(2).getPosition().x = beacon.getPosition().x
+				and planes(2).getPosition().y = beacon.getPosition().y
+			);
+
+			-- assert plane 3
+			IO`print(planes(3).getPosition());
+			IO`print("\n");
+			IO`print(airport.getPosition());
+			IO`print("\n");
+			assertTrue(
+				planes(3).getPosition().x = airport.getPosition().x
+				and planes(3).getPosition().y = airport.getPosition().y
+			);
 		);
 
 	public static main : () ==> ()
 		main() == (
-			new AirTest().testDirection();
+			new AirTest().testDestinations();
 		);
 
 end AirTest
