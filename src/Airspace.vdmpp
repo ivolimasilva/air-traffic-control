@@ -10,56 +10,46 @@ class Airspace
 
 	instance variables
 		private minSpace : nat1 := 2;
-		private size : Size;
+		-- private size : Size;
 		private area : map Radar`Position to nat1 := {|->};
 		private radars : seq of Radar := [];
-		private beacons : set of Beacon := {};
-		private airports : set of Airport := {};
+		private beacons : seq of Beacon := [];
+		private airports : seq of Airport := [];
 		private planes : seq of Plane := [];
 
 	operations
-
-		-- Construtor of the airspace
-		public Airspace : nat * nat ==> Airspace
-			Airspace(size_x, size_y) == (
-				size := mk_Size(size_x, size_y);
-			);
 
 		-- Operation to add radars
 		public addRadar : Radar ==> ()
 			addRadar(radar) == (
 				radars := radars ^ [radar];
 				area := area munion {radar.getPosition() |-> radar.getRadius()};
-			)
-			pre inLimits(radar, size);
+			);
 
 		-- Operation to add beacons
 		public addBeacon : Beacon ==> ()
 			addBeacon(beacon) == (
-				beacons := beacons union {beacon};
-			)
-			pre inLimits(beacon, size);
+				beacons := beacons ^ [beacon];
+			);
 
 		-- Operation to add airports
 		public addAirport : Airport ==> ()
 			addAirport(airport) == (
-				airports := airports union {airport};
-			)
-			pre inLimits(airport, size);
+				airports := airports ^ [airport];
+			);
 
 		-- Operation to add planes
 		public addPlane : Plane ==> ()
 			addPlane(plane) == (
 				planes := planes ^ [plane];
-			)
-			pre inLimits(plane, size);
+			);
 
 		-- Operation to look out for collisions between planes
 		public handleCollisions : () ==> ()
 			handleCollisions() == (
 				for i = 1 to len planes by 1 do
 					for j = i + 1 to len planes by 1 do
-						if abs (planes(i).getPosition().x - planes(j).getPosition().x) < minSpace
+						if (abs (planes(i).getPosition().x - planes(j).getPosition().x)) < minSpace
 						then
 							planes(i).setSpeed(0.5);
 			);
@@ -83,23 +73,5 @@ class Airspace
 						);
 				);
 			);
-
-	functions
-
-		-- check if object is in map limits
-		private inLimits : ? * Size -> bool
-			inLimits(building, size) == (
-				if building.getPosition().x < size.x
-					and building.getPosition().x > 0
-					and building.getPosition().y < size.y
-					and building.getPosition().y > 0
-				then
-					true
-				else
-					false
-			);
-
-	traces
-	-- TODO Define Combinatorial Test Traces here
 
 end Airspace

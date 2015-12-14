@@ -52,10 +52,10 @@ class Radar
 		-- Operation to check if plane is in this radar area
 		public isInArea : Plane ==> bool
 			isInArea(plane) == (
-				if plane.getPosition().x >= pos.x - radius
-					and plane.getPosition().x <= pos.x + radius
-					and plane.getPosition().y >= pos.y - radius
-					and plane.getPosition().y <= pos.y + radius
+				if plane.getPosition().x >= (pos.x - radius)
+					and plane.getPosition().x <= (pos.x + radius)
+					and plane.getPosition().y >= (pos.y - radius)
+					and plane.getPosition().y <= (pos.y + radius)
 				then
 					return true
 				else

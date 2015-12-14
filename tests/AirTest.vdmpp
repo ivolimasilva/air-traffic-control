@@ -3,10 +3,10 @@ class AirTest
 instance variables
 
 	-- test-airspace
-	private airspace : Airspace := new Airspace(15, 15);
+	private airspace : Airspace := new Airspace();
 
 	-- test-radar
-	private radar : Radar := new Radar(3, 12, 3);
+	private radar : Radar := new Radar(12, 3, 3);
 
 	-- test-airport
 	private airport : Airport := new Airport (<S>, 10, 7, 12);
@@ -17,10 +17,8 @@ instance variables
 	-- test-planes
 	private planes : seq of Plane := [
 		new Plane(1, 7, 5),
-		new Plane(0.25, 8, 8),
-		new Plane(0.5, 3, 10),
-		new Plane(1, 1, 1),
-		new Plane(0.5, 12, 3)
+		new Plane(1, 8, 8),
+		new Plane(1, 3, 10)
 	];
 
 operations
@@ -29,16 +27,20 @@ operations
 	  assertTrue(cond) == return
 	  pre cond;
 
-	private init : () ==> ()
-		init() == (
+	private testDestinations : () ==> ()
+		testDestinations() == (
+
+			-- redirect radar
+			radar.setDestination(12, 12);
+		
 			-- adding planes to airspace
 			for i = 1 to len planes by 1 do (
 				airspace.addPlane(planes(i));
-			)
-		);
-
-	private testDestinations : () ==> ()
-		testDestinations() == (
+			);
+			airspace.addRadar(radar);
+			airspace.addBeacon(beacon);
+			airspace.addAirport(airport);
+		
 			-- testing plane 1
 			planes(1).setDestination(3, 3);
 
@@ -47,33 +49,32 @@ operations
 
 			-- testing plane 3
 			planes(3).goToAirport(airport);
+			airport.addPlane(planes(3));
 
 			-- planes/radars tick
-			for i = 0 to 50 by 1 do (
+			for i = 0 to 10 by 1 do (
 				airspace.tickPlanes();
 				airspace.tickRadars();
+				airspace.handleCollisions();
 			);
 
+			-- IO`println(airspace);
+
 			-- assert plane 1
-			IO`print(planes(1).getDirection());
-			IO`print("\n");
-			assertTrue(planes(1).getDirection() = <SW>);
+			-- IO`println(planes(1).getDirection());
+			assertTrue(planes(1).getDirection() = <X>);
 
 			-- assert plane 2
-			IO`print(planes(2).getPosition());
-			IO`print("\n");
-			IO`print(beacon.getPosition());
-			IO`print("\n");
+			-- IO`println(planes(2).getPosition());
+			-- IO`println(beacon.getPosition());
 			assertTrue(
 				planes(2).getPosition().x = beacon.getPosition().x
 				and planes(2).getPosition().y = beacon.getPosition().y
 			);
 
 			-- assert plane 3
-			IO`print(planes(3).getPosition());
-			IO`print("\n");
-			IO`print(airport.getPosition());
-			IO`print("\n");
+			-- IO`println(planes(3).getPosition());
+			-- IO`println(airport.getPosition());
 			assertTrue(
 				planes(3).getPosition().x = airport.getPosition().x
 				and planes(3).getPosition().y = airport.getPosition().y
