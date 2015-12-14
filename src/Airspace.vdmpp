@@ -1,24 +1,20 @@
 class Airspace
 
 	types
-		public Building = <Airport> | <Beacon> | <Radar> | <None>;
 		public Position ::
 			x : nat
 			y : nat;
 		public Size ::
 			x : nat
 			y : nat;
-		public cell ::
-			controlled : bool
-			building : Building;
 
 	instance variables
 		private minSpace : nat1 := 2;
 		private size : Size;
-		private area : seq of seq of cell := [];
+		private area : map Radar`Position to nat1 := {|->};
 		private radars : seq of Radar := [];
-		private beacons : seq of Beacon := [];
-		private airports : seq of Airport := [];
+		private beacons : set of Beacon := {};
+		private airports : set of Airport := {};
 		private planes : seq of Plane := [];
 
 	operations
@@ -27,38 +23,27 @@ class Airspace
 		public Airspace : nat * nat ==> Airspace
 			Airspace(size_x, size_y) == (
 				size := mk_Size(size_x, size_y);
-
-				for i = 0 to size_x by 1 do
-					for j = 0 to size_y by 1 do (
-						area(i)(j).building := <None>;
-						area(i)(j).controlled := false;
-					);
 			);
 
 		-- Operation to add radars
 		public addRadar : Radar ==> ()
 			addRadar(radar) == (
 				radars := radars ^ [radar];
-				area(radar.getPosition().x)(radar.getPosition().y).building := <Radar>;
-				for i = 0 to size.x by 1 do
-					for j = 0 to size.y by 1 do (
-						area(i)(j).building := <None>;
-						area(i)(j).controlled := false;
-					);
+				area := area munion {radar.getPosition() |-> radar.getRadius()};
 			)
 			pre inLimits(radar, size);
 
 		-- Operation to add beacons
 		public addBeacon : Beacon ==> ()
 			addBeacon(beacon) == (
-				beacons := beacons ^ [beacon];
+				beacons := beacons union {beacon};
 			)
 			pre inLimits(beacon, size);
 
 		-- Operation to add airports
 		public addAirport : Airport ==> ()
 			addAirport(airport) == (
-				airports := airports ^ [airport];
+				airports := airports union {airport};
 			)
 			pre inLimits(airport, size);
 
@@ -72,7 +57,7 @@ class Airspace
 		-- Operation to look out for collisions between planes
 		public handleCollisions : () ==> ()
 			handleCollisions() == (
-				for i = 0 to len planes by 1 do
+				for i = 1 to len planes by 1 do
 					for j = i + 1 to len planes by 1 do
 						if abs (planes(i).getPosition().x - planes(j).getPosition().x) < minSpace
 						then
@@ -82,7 +67,7 @@ class Airspace
 		-- Operation to tick planes
 		public tickPlanes : () ==> ()
 			tickPlanes() == (
-				for i = 0 to len planes by 1 do (
+				for i = 1 to len planes by 1 do (
 					planes(i).move();
 				);
 			);
@@ -90,8 +75,8 @@ class Airspace
 		-- Operation to tick radars
 		public tickRadars : () ==> ()
 			tickRadars() == (
-				for i = 0 to len radars by 1 do (
-					for j = 0 to len planes by 1 do (
+				for i = 1 to len radars by 1 do (
+					for j = 1 to len planes by 1 do (
 							if radars(i).isInArea(planes(j))
 							then
 								radars(i).takeEffect(planes(j));
@@ -105,7 +90,9 @@ class Airspace
 		private inLimits : ? * Size -> bool
 			inLimits(building, size) == (
 				if building.getPosition().x < size.x
+					and building.getPosition().x > 0
 					and building.getPosition().y < size.y
+					and building.getPosition().y > 0
 				then
 					true
 				else

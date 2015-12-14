@@ -1,0 +1,50 @@
+class AirTest
+
+instance variables
+
+	-- test-airspace
+	private airspace : Airspace := new Airspace(15, 15);
+
+	-- test-beacon
+	private beacon : Beacon := new Beacon(10, 10);
+
+	-- test-planes
+	private planes : seq of Plane := [
+		new Plane(1, 7, 5),
+		new Plane(0.25, 8, 8),
+		new Plane(0.5, 3, 10),
+		new Plane(1, 1, 1),
+		new Plane(0.5, 12, 3)
+	];
+
+operations
+
+	private assertTrue: bool ==> ()
+	  assertTrue(cond) == return
+	  pre cond;
+
+	private init : () ==> ()
+		init() == (
+			-- adding planes to airspace
+			for i = 1 to len planes by 1 do (
+				airspace.addPlane(planes(i));
+			)
+		);
+
+	private testDirection : () ==> ()
+		testDirection() == (
+			-- testing plane 1
+			planes(1).setDestination(3, 3);
+			-- assert
+			assertTrue(planes(1).getDirection() = <SW>);
+
+			-- testing plane 2
+			planes(2).goToBeacon(beacon);
+		);
+
+	public static main : () ==> ()
+		main() == (
+			new AirTest().testDirection();
+		);
+
+end AirTest

@@ -43,6 +43,12 @@ class Radar
 				return pos;
 			);
 
+		-- Operation to get radius of the radar
+		public getRadius : () ==> nat1
+			getRadius() == (
+				return radius;
+			);
+
 		-- Operation to check if plane is in this radar area
 		public isInArea : Plane ==> bool
 			isInArea(plane) == (
